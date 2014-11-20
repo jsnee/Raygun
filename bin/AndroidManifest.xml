@@ -16,6 +16,19 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login" >
+            <intent-filter>
+                <action android:name="edu.drake.loginScreen" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SplashscreenActivity"
+            android:label="@string/title_activity_splashscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
