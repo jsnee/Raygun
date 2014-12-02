@@ -1,21 +1,29 @@
 package edu.drake.raygun;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -28,6 +36,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	 * {@link android.support.v13.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
+	protected static PostListAdapter hotPostAdapter, newPostAdapter, topPostAdapter;
 
 	/**
 	 * The {@link ViewPager} that will host the section contents.
@@ -50,17 +59,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		
+		loadPosts();
 
 		// When swiping between different sections, select the corresponding
 		// tab. We can also use ActionBar.Tab#select() to do this if we have
 		// a reference to the Tab.
 		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						actionBar.setSelectedNavigationItem(position);
-					}
-				});
+		.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				actionBar.setSelectedNavigationItem(position);
+			}
+		});
 
 		// For each of the sections in the app, add a tab to the action bar.
 		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
@@ -73,12 +84,35 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 					.setTabListener(this));
 		}
 	}
+	
+	private void loadPosts() {
+		
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		
+		List<PostEntry> posts = new ArrayList<PostEntry>();
+		Bitmap postImage = PostEntry.decodeSampledBitmapFromResource(getResources(), R.drawable.post_1, size.x, size.y);
+		float[] geoLoc = { 3.0f, 4.5f };
+		PostEntry post = new PostEntry(postImage, "Drink Like A True Midwesterner", 54, geoLoc, "JOSH_THE_GREAT");
+		posts.add(post);
+		postImage = PostEntry.decodeSampledBitmapFromResource(getResources(), R.drawable.post_2, size.x, size.y);
+		post = new PostEntry(postImage, "Don't Run Me Over", 5, geoLoc, "GENERIC_USERNAME");
+		posts.add(post);
+		
+		hotPostAdapter = new PostListAdapter(this, posts);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	private void showStore() {
+		Intent intent = new Intent(this, ShopActivity.class);
+		startActivity(intent);
 	}
 
 	@Override
@@ -89,6 +123,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		} else if (id == R.id.action_shop) {
+			showStore();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -177,10 +213,33 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
+			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+			Bundle args = this.getArguments();
+			int sectionNumber = args.getInt(ARG_SECTION_NUMBER);
+			
+			switch (sectionNumber) {
+			case 1:
+				ListView postList = (ListView) rootView.findViewById(R.id.listView1);
+				postList.setAdapter(hotPostAdapter);
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			default:
+				break;
+			}
 			return rootView;
 		}
+	}
+	
+	private OnItemClickListener getPostListener() {
+		return new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String selectedPostTitle = ((TextView) view.findViewById(R.id.postEntryTitle)).getText().toString();
+			}
+		};
 	}
 
 }

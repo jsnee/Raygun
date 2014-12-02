@@ -24,7 +24,7 @@ public class SplashscreenActivity extends Activity {
             		//setContentView(R.layout.activity_main);
                     System.out.println("here!");
                     //after 5 sec, it will take user to app's home screen
-	            	startActivity(new Intent("edu.drake.loginScreen"));
+	            	openMainActivity();
                 } 
                  
                 catch (InterruptedException e) {
@@ -38,6 +38,10 @@ public class SplashscreenActivity extends Activity {
 		};
 		
 		logoTimer.start();
+	}
+	
+	public void openMainActivity() {
+		startActivity(new Intent(this, LoginActivity.class));
 	}
 
 	@Override

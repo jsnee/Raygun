@@ -38,7 +38,7 @@ public class LoginActivity extends Activity {
 
 	}
 
-	void doneLoading(){
+	void doneLoading() {
 		//restart the activity and take it off the stack.  this sucks but I was running out of time, and I can't let you press back to go back on the login screen
 		finish();
 		startActivity(getIntent().addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
